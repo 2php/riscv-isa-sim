@@ -36,7 +36,7 @@ sim_t::sim_t(const char* isa, const char* priv, const char* varch,
              std::vector<int> const hartids,
              const debug_module_config_t &dm_config,
              const char *log_path,
-             bool dtb_enabled, const char *dtb_file)
+             bool dtb_enabled, const char *dtb_file, bool is_diff_ref)
   : htif_t(args),
     mems(mems),
     plugin_devices(plugin_devices),
@@ -51,13 +51,15 @@ sim_t::sim_t(const char* isa, const char* priv, const char* varch,
     current_step(0),
     current_proc(0),
     debug(false),
-    is_diff_ref(false),
+    is_diff_ref(is_diff_ref),
     histogram_enabled(false),
     log(false),
     remote_bitbang(NULL),
     debug_module(this, dm_config)
 {
-  signal(SIGINT, &handle_signal);
+  if (is_diff_ref) {
+    signal(SIGINT, &handle_signal);
+  }
 
   for (auto& x : mems)
     bus.add_device(x.first, x.second);
@@ -81,6 +83,18 @@ sim_t::sim_t(const char* isa, const char* priv, const char* varch,
     int hart_id = hartids.empty() ? i : hartids[i];
     procs[i] = new processor_t(isa, priv, varch, this, hart_id, halted,
                                log_file.get());
+  }
+
+  if (is_diff_ref) {
+    int i = 0;
+    procs[i]->set_mmu_capability(IMPL_MMU_SBARE);
+    unsigned max_xlen = procs[i]->get_max_xlen();
+    switch (max_xlen) {
+      case 32: procs[i]->set_mmu_capability(IMPL_MMU_SV32); break;
+      case 64: procs[i]->set_mmu_capability(IMPL_MMU_SV39); break;
+      default: std::cerr << "invalid max_xlen = " << max_xlen << std::endl; exit(1);
+    }
+    return;
   }
 
   make_dtb();
