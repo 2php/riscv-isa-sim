@@ -169,6 +169,8 @@ std::string dts_compile(const std::string& dts)
   int status;
   waitpid(dts_pid, &status, 0);
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+    std::cerr << "WIFEXITED(status) = " << WIFEXITED(status) << std::endl;
+    std::cerr << "WEXITSTATUS(status) = " << WEXITSTATUS(status) << std::endl;
     std::cerr << "Child dts process failed" << std::endl;
     exit(1);
   }
