@@ -113,17 +113,26 @@ std::string dts_compile(const std::string& dts)
 
   // Child process to output dts
   if (dts_pid == 0) {
+    std::cerr << "line: " << __LINE__ << std::endl;
     close(dts_pipe[0]);
+    std::cerr << "line: " << __LINE__ << std::endl;
     int step, len = dts.length();
+    std::cerr << "line: " << __LINE__ << std::endl;
     const char *buf = dts.c_str();
+    std::cerr << "line: " << __LINE__ << std::endl;
     for (int done = 0; done < len; done += step) {
+      std::cerr << "line: " << __LINE__ << std::endl;
       step = write(dts_pipe[1], buf+done, len-done);
+      std::cerr << "line: " << __LINE__ << std::endl;
       if (step == -1) {
+        std::cerr << "line: " << __LINE__ << std::endl;
         std::cerr << "Failed to write dts: " << strerror(errno) << std::endl;
         exit(1);
       }
     }
+    std::cerr << "line: " << __LINE__ << std::endl;
     close(dts_pipe[1]);
+    std::cerr << "line: " << __LINE__ << std::endl;
     exit(0);
   }
 
@@ -171,8 +180,8 @@ std::string dts_compile(const std::string& dts)
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
     std::cerr << "WIFEXITED(status) = " << WIFEXITED(status) << std::endl;
     std::cerr << "WEXITSTATUS(status) = " << WEXITSTATUS(status) << std::endl;
-    std::cerr << "WIFSIGNALED(wstatus) = " << WIFSIGNALED(wstatus) << std::endl;
-    std::cerr << "WTERMSIG(wstatus) = " << WTERMSIG(wstatus) << std::endl;
+    std::cerr << "WIFSIGNALED(wstatus) = " << WIFSIGNALED(status) << std::endl;
+    std::cerr << "WTERMSIG(wstatus) = " << WTERMSIG(status) << std::endl;
     std::cerr << "Child dts process failed" << std::endl;
     exit(1);
   }
