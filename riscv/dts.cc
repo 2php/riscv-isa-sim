@@ -171,6 +171,8 @@ std::string dts_compile(const std::string& dts)
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
     std::cerr << "WIFEXITED(status) = " << WIFEXITED(status) << std::endl;
     std::cerr << "WEXITSTATUS(status) = " << WEXITSTATUS(status) << std::endl;
+    std::cerr << "WIFSIGNALED(wstatus) = " << WIFSIGNALED(wstatus) << std::endl;
+    std::cerr << "WTERMSIG(wstatus) = " << WTERMSIG(wstatus) << std::endl;
     std::cerr << "Child dts process failed" << std::endl;
     exit(1);
   }
